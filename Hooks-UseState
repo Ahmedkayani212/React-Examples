@@ -1,0 +1,531 @@
+Example 1: Number Counting
+
+import { useState } from 'react';
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+
+  function handleClick() {
+    setCount(count + 1);
+  }
+
+  return (
+    <button onClick={handleClick}>
+      You pressed me {count} times
+    </button>
+  );
+}
+
+
+Example 2: Text Field with reset button
+
+import { useState } from 'react';
+
+export default function MyInput() {
+  const [text, setText] = useState('hello');
+
+  function handleChange(e) {
+    setText(e.target.value);
+  }
+
+  return (
+    <>
+      <input value={text} onChange={handleChange} />
+      <p>You typed: {text}</p>
+      <button onClick={() => setText('hello')}>
+        Reset
+      </button>
+    </>
+  );
+}
+
+
+Example 3: Boolean Check Box
+
+import { useState } from 'react';
+
+export default function MyCheckbox() {
+  const [liked, setLiked] = useState(true);
+
+  function handleChange(e) {
+    setLiked(e.target.checked);
+  }
+
+  return (
+    <>
+      <label>
+        <input
+          type="checkbox"
+          checked={liked}
+          onChange={handleChange}
+        />
+        I liked this
+      </label>
+      <p>You {liked ? 'liked' : 'did not like'} this.</p>
+    </>
+  );
+}
+
+Example 4: Form with teo variable text and increment button
+
+import { useState } from 'react';
+
+export default function Form() {
+  const [name, setName] = useState('Taylor');
+  const [age, setAge] = useState(42);
+
+  return (
+    <>
+      <input
+        value={name}
+        onChange={e => setName(e.target.value)}
+      />
+      <button onClick={() => setAge(age + 1)}>
+        Increment age
+      </button>
+      <p>Hello, {name}. You are {age}.</p>
+    </>
+  );
+}
+
+Example 5: Passing the updater function.
+
+import { useState } from 'react';
+
+export default function Counter() {
+  const [age, setAge] = useState(42);
+
+  function increment() {
+    setAge(a => a + 1);
+  }
+
+  return (
+    <>
+      <h1>Your age: {age}</h1>
+      <button onClick={() => {
+        increment();
+        increment();
+        increment();
+      }}>+3</button>
+      <button onClick={() => {
+        increment();
+      }}>+1</button>
+    </>
+  );
+}
+
+Example 6: Passing directly to the next stage
+
+import { useState } from 'react';
+
+export default function Counter() {
+  const [age, setAge] = useState(42);
+
+  function increment() {
+    setAge(age + 1);
+  }
+
+  return (
+    <>
+      <h1>Your age: {age}</h1>
+      <button onClick={() => {
+        increment();
+        increment();
+        increment();
+      }}>+3</button>
+      <button onClick={() => {
+        increment();
+      }}>+1</button>
+    </>
+  );
+}
+
+Example 7: Form - 3 Entries
+
+import { useState } from 'react';
+
+export default function Form() {
+  const [form, setForm] = useState({
+    firstName: 'Barbara',
+    lastName: 'Hepworth',
+    email: 'bhepworth@sculpture.com',
+  });
+
+  return (
+    <>
+      <label>
+        First name:
+        <input
+          value={form.firstName}
+          onChange={e => {
+            setForm({
+              ...form,
+              firstName: e.target.value
+            });
+          }}
+        />
+      </label>
+      <label>
+        Last name:
+        <input
+          value={form.lastName}
+          onChange={e => {
+            setForm({
+              ...form,
+              lastName: e.target.value
+            });
+          }}
+        />
+      </label>
+      <label>
+        Email:
+        <input
+          value={form.email}
+          onChange={e => {
+            setForm({
+              ...form,
+              email: e.target.value
+            });
+          }}
+        />
+      </label>
+      <p>
+        {form.firstName}{' '}
+        {form.lastName}{' '}
+        ({form.email})
+      </p>
+    </>
+  );
+}
+
+Example 8: Nested Object Form
+
+import { useState } from 'react';
+
+export default function Form() {
+  const [person, setPerson] = useState({
+    name: 'Niki de Saint Phalle',
+    artwork: {
+      title: 'Blue Nana',
+      city: 'Hamburg',
+      image: 'https://i.imgur.com/Sd1AgUOm.jpg',
+    }
+  });
+
+  function handleNameChange(e) {
+    setPerson({
+      ...person,
+      name: e.target.value
+    });
+  }
+
+  function handleTitleChange(e) {
+    setPerson({
+      ...person,
+      artwork: {
+        ...person.artwork,
+        title: e.target.value
+      }
+    });
+  }
+
+  function handleCityChange(e) {
+    setPerson({
+      ...person,
+      artwork: {
+        ...person.artwork,
+        city: e.target.value
+      }
+    });
+  }
+
+  function handleImageChange(e) {
+    setPerson({
+      ...person,
+      artwork: {
+        ...person.artwork,
+        image: e.target.value
+      }
+    });
+  }
+
+  return (
+    <>
+      <label>
+        Name:
+        <input
+          value={person.name}
+          onChange={handleNameChange}
+        />
+      </label>
+      <label>
+        Title:
+        <input
+          value={person.artwork.title}
+          onChange={handleTitleChange}
+        />
+      </label>
+      <label>
+        City:
+        <input
+          value={person.artwork.city}
+          onChange={handleCityChange}
+        />
+      </label>
+      <label>
+        Image:
+        <input
+          value={person.artwork.image}
+          onChange={handleImageChange}
+        />
+      </label>
+      <p>
+        <i>{person.artwork.title}</i>
+        {' by '}
+        {person.name}
+        <br />
+        (located in {person.artwork.city})
+      </p>
+      <img 
+        src={person.artwork.image} 
+        alt={person.artwork.title}
+      />
+    </>
+  );
+}
+
+Example 9: List array
+
+App.js
+import { useState } from 'react';
+import AddTodo from './AddTodo.js';
+import TaskList from './TaskList.js';
+
+let nextId = 3;
+const initialTodos = [
+  { id: 0, title: 'Buy milk', done: true },
+  { id: 1, title: 'Eat tacos', done: false },
+  { id: 2, title: 'Brew tea', done: false },
+];
+
+export default function TaskApp() {
+  const [todos, setTodos] = useState(initialTodos);
+
+  function handleAddTodo(title) {
+    setTodos([
+      ...todos,
+      {
+        id: nextId++,
+        title: title,
+        done: false
+      }
+    ]);
+  }
+
+  function handleChangeTodo(nextTodo) {
+    setTodos(todos.map(t => {
+      if (t.id === nextTodo.id) {
+        return nextTodo;
+      } else {
+        return t;
+      }
+    }));
+  }
+
+  function handleDeleteTodo(todoId) {
+    setTodos(
+      todos.filter(t => t.id !== todoId)
+    );
+  }
+
+  return (
+    <>
+      <AddTodo
+        onAddTodo={handleAddTodo}
+      />
+      <TaskList
+        todos={todos}
+        onChangeTodo={handleChangeTodo}
+        onDeleteTodo={handleDeleteTodo}
+      />
+    </>
+  );
+}
+
+AddTodo.js
+import { useState } from 'react';
+
+export default function AddTodo({ onAddTodo }) {
+  const [title, setTitle] = useState('');
+  return (
+    <>
+      <input
+        placeholder="Add todo"
+        value={title}
+        onChange={e => setTitle(e.target.value)}
+      />
+      <button onClick={() => {
+        setTitle('');
+        onAddTodo(title);
+      }}>Add</button>
+    </>
+  )
+}
+
+TaskList.js
+import { useState } from 'react';
+
+export default function TaskList({
+  todos,
+  onChangeTodo,
+  onDeleteTodo
+}) {
+  return (
+    <ul>
+      {todos.map(todo => (
+        <li key={todo.id}>
+          <Task
+            todo={todo}
+            onChange={onChangeTodo}
+            onDelete={onDeleteTodo}
+          />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Task({ todo, onChange, onDelete }) {
+  const [isEditing, setIsEditing] = useState(false);
+  let todoContent;
+  if (isEditing) {
+    todoContent = (
+      <>
+        <input
+          value={todo.title}
+          onChange={e => {
+            onChange({
+              ...todo,
+              title: e.target.value
+            });
+          }} />
+        <button onClick={() => setIsEditing(false)}>
+          Save
+        </button>
+      </>
+    );
+  } else {
+    todoContent = (
+      <>
+        {todo.title}
+        <button onClick={() => setIsEditing(true)}>
+          Edit
+        </button>
+      </>
+    );
+  }
+  return (
+    <label>
+      <input
+        type="checkbox"
+        checked={todo.done}
+        onChange={e => {
+          onChange({
+            ...todo,
+            done: e.target.checked
+          });
+        }}
+      />
+      {todoContent}
+      <button onClick={() => onDelete(todo.id)}>
+        Delete
+      </button>
+    </label>
+  );
+}
+
+Example 10: Passing the initializer function
+
+import { useState } from 'react';
+
+function createInitialTodos() {
+  const initialTodos = [];
+  for (let i = 0; i < 50; i++) {
+    initialTodos.push({
+      id: i,
+      text: 'Item ' + (i + 1)
+    });
+  }
+  return initialTodos;
+}
+
+export default function TodoList() {
+  const [todos, setTodos] = useState(createInitialTodos);
+  const [text, setText] = useState('');
+
+  return (
+    <>
+      <input
+        value={text}
+        onChange={e => setText(e.target.value)}
+      />
+      <button onClick={() => {
+        setText('');
+        setTodos([{
+          id: todos.length,
+          text: text
+        }, ...todos]);
+      }}>Add</button>
+      <ul>
+        {todos.map(item => (
+          <li key={item.id}>
+            {item.text}
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+Example 11: Passing Initial State Directly
+
+import { useState } from 'react';
+
+function createInitialTodos() {
+  const initialTodos = [];
+  for (let i = 0; i < 50; i++) {
+    initialTodos.push({
+      id: i,
+      text: 'Item ' + (i + 1)
+    });
+  }
+  return initialTodos;
+}
+
+export default function TodoList() {
+  const [todos, setTodos] = useState(createInitialTodos());
+  const [text, setText] = useState('');
+
+  return (
+    <>
+      <input
+        value={text}
+        onChange={e => setText(e.target.value)}
+      />
+      <button onClick={() => {
+        setText('');
+        setTodos([{
+          id: todos.length,
+          text: text
+        }, ...todos]);
+      }}>Add</button>
+      <ul>
+        {todos.map(item => (
+          <li key={item.id}>
+            {item.text}
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
