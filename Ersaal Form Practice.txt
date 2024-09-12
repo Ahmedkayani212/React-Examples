@@ -1,0 +1,376 @@
+App.js
+
+import React from 'react';
+import './App.css';
+import SubscriptionForm from './SubscriptionForm';
+
+
+function App() {
+  return (
+    <div className="App">
+      <SubscriptionForm />
+    </div>
+  );
+}
+
+export default App;
+
+
+import React, { useState } from 'react';
+import './App.css';  
+
+function SubscriptionForm() {
+  const [mobile, setMobile] = useState('');
+  const [otp, setOtp] = useState(['', '', '', '']);
+  const [isChecked, setIsChecked] = useState(false); // New state for checkbox
+
+  const handleMobileChange = (event) => {
+    const value = event.target.value;
+    setMobile(value);
+
+    if (value.length === 10) {
+      setOtp(generateOTP());
+    }
+  };
+
+  const generateOTP = () => {
+    const otp = [];
+    for (let i = 0; i < 4; i++) {
+      otp.push(Math.floor(Math.random() * 10)); // Generate random digit between 0-9
+    }
+    return otp;
+  };
+
+  const handleOtpChange = (index, event) => {
+    const newOtp = [...otp];
+    newOtp[index] = event.target.value;
+    setOtp(newOtp);
+  };
+
+  const handleCheckboxChange = (event) => {
+    setIsChecked(event.target.checked); // Update checkbox state
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault(); 
+    if (isChecked) {
+      window.location.href = 'https://switch.com.pk/'; // Replace with your desired URL
+    }
+  };
+
+  return (
+    <div className="container">
+      <header className="logo"> {/* Logo Section */}
+        <img src="logo11.png" alt="Logo" />
+      </header>
+
+      <h1 className="title">Subscribe to our Monthly package</h1>
+
+      <form className="subscription-form" onSubmit={handleSubmit}>
+        <label htmlFor="mobile" className="label">Enter Mobile Number<span> Below</span></label>
+        <div className="input-container">
+          <span className="country-code">+92</span>
+          <input
+            type="text"
+            id="mobile"
+            className="mobile-input"
+            maxLength="10"
+            placeholder="XXXXXXXXXX"
+            value={mobile}
+            onChange={handleMobileChange}
+          />
+        </div>
+
+        <label htmlFor="otp" className="label">Enter One Time <span>Password</span></label>
+        <div className="otp-container">
+          {otp.map((digit, index) => (
+            <input
+              key={index}
+              type="text"
+              className="otp-input"
+              maxLength="1"
+              placeholder="-"
+              value={digit}
+              onChange={(e) => handleOtpChange(index, e)}
+            />
+          ))}
+        </div>
+
+        <p className="otp-expiry">The OTP will expire in <span>59sec</span></p>
+
+        <button 
+          type="submit" 
+          className="submit-button" 
+          disabled={!isChecked} // Disable button if checkbox is not checked
+        >
+          Continue
+        </button>
+        <div className="checkbox-container">
+          <input 
+            type="checkbox" 
+            id="terms" 
+            className="terms-checkbox" 
+            checked={isChecked} 
+            onChange={handleCheckboxChange} // Handle checkbox change
+          />
+          <label htmlFor="terms" className="terms-label">
+            I agree to <span>Terms and Conditions</span>.
+          </label>
+        </div>     
+      </form>
+
+      <footer className="footer">
+        <p>Daily Plan</p>
+        <p><span>Subscription charges: Upto Rs10/Day(Incl.Tax)</span></p>
+      </footer>
+    </div>
+  );
+}
+
+export default SubscriptionForm;
+
+App.css
+
+body {
+  background: #262B23;
+  font-family: Arial, sans-serif;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.container {
+  text-align: left; /* Align text to the left to align with the form fields */
+  padding: 20px;
+  max-width: 748px;
+  max-height: 1025px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Add spacing between elements */
+}
+
+
+.logo {
+  display: flex;
+  justify-content: flex-end; /* Move the logo to the right side */
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.logo img {
+  width: 161px;
+  height: 56.46px;
+}
+
+.title {
+  font-size: 27px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  line-height: 38.19px;
+  white-space: nowrap;
+}
+
+.label {
+  display: block;
+  font-size: 20px;
+  margin-bottom: 5px;
+  line-height: 24.8px;
+  font-weight: 300;
+  text-align: left;
+}
+
+label span {
+  color: #86FFC6;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.country-code {
+  background-color: #1D2025;
+  padding: 13px;
+  border-radius: 5px 0 0 5px;
+  border: none;
+}
+
+.mobile-input {
+  flex: 1;
+  padding: 15px;
+  border-radius: 0 5px 5px 0;
+  border: none;
+  background-color: #1D2025;
+  color: #ffffff;
+}
+
+.otp-container {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 8px;
+  margin-top: 20px;
+}
+
+.otp-input {
+  width: 26px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #CECECE;
+  background-color: #1e2228;
+  color: #ffffff;
+  text-align: center;
+  font-size: 16px;
+}
+
+.otp-expiry {
+  font-size: 10px;
+  color: #a3a3a3;
+  margin-bottom: 20px;
+  text-align: left;
+  font-weight: 400px;
+  line-height: 13.66px;
+  font-family: manrope;
+}
+
+.otp-expiry span {
+  color: #86FFC6;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.terms-checkbox {
+  margin-right: 10px;
+}
+
+.terms-label span {
+  color: #86FFC6;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.submit-button {
+  background: linear-gradient(to right, #86FFC6, #00DBFF);
+  color: #0a0f14;
+  padding: 15px;
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  margin-top: 30px;
+}
+
+.submit-button:hover {
+  background-color: #16a085;
+}
+
+.footer {
+  font-size: 16px;
+  color: white;
+  margin-top: 100px;
+  text-align: left;
+}
+
+.footer span {
+  color: #A6A6A6;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16.24px;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 15px;
+    max-width: 100%;
+  }
+
+  .title {
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .label {
+    font-size: 18px;
+    line-height: 22px;
+  }
+
+  .otp-container {
+    gap: 10px;
+  }
+
+  .otp-input {
+    width: 22px;
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .submit-button {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .footer {
+    font-size: 14px;
+    margin-top: 50px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 10px;
+    gap: 15px;
+  }
+
+  .logo {
+    justify-content: center; /* Center the logo for very small screens */
+    margin-top: 10px;
+  }
+
+  .logo img {
+    width: 140px;
+    height: 50px;
+  }
+
+  .title {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .label {
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .otp-container {
+    gap: 8px;
+  }
+
+  .otp-input {
+    width: 20px;
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .submit-button {
+    padding: 10px;
+    font-size: 0.8rem;
+  }
+
+  .footer {
+    font-size: 12px;
+    margin-top: 40px;
+  }
+}
