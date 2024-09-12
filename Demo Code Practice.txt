@@ -1,0 +1,536 @@
+import React, { useState, useEffect, useRef } from 'react';
+
+const LeftPanel = () => {
+  const [hoveredFolder, setHoveredFolder] = useState(null);
+  const [selectedFolder, setSelectedFolder] = useState(null);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [hoveredCreateFolderButton, setHoveredCreateFolderButton] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
+  const [newFolderName, setNewFolderName] = useState(''); // Folder name state
+  const [folders, setFolders] = useState([
+    'Others', 'Promos', 'Bills', 'Discounts', 'Banks', 'Family', 'Orders', 'Office', 'Tour', 'Frequent', 'Cousins', 'Frequentss'
+  ]);
+
+  const carouselRef = useRef(null);
+
+  const handleMouseEnter = (index) => {
+    setHoveredFolder(index);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredFolder(null);
+  };
+
+  const handleFolderClick = (index) => {
+    setSelectedFolder(index);
+  };
+
+  const handleSearchClick = () => {
+    console.log("Search icon clicked!");
+  };
+
+  const handleCreateFolderButtonMouseEnter = () => {
+    setHoveredCreateFolderButton(true);
+  };
+
+  const handleCreateFolderButtonMouseLeave = () => {
+    setHoveredCreateFolderButton(false);
+  };
+
+  const handleCreateFolderClick = () => {
+    setIsModalOpen(true); // Open the modal when "Create Folder" is clicked
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setNewFolderName(''); // Clear input field when modal closes
+  };
+
+  const handleCreateNewFolder = () => {
+    if (newFolderName.trim()) {
+      setFolders([...folders, newFolderName]); // Add new folder to list
+      handleModalClose(); // Close the modal
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCarouselIndex((prevIndex) => (prevIndex + 1) % 4);
+    }, 3000); // Change slide every 3 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (carouselRef.current) {
+      carouselRef.current.style.transform = `translateX(-${carouselIndex * 50}%)`;
+    }
+  }, [carouselIndex]);
+
+  return (
+    <div style={styles.container}>
+      {/* Header Section */}
+      <div style={styles.header}>
+        <div style={styles.profile}>
+          <h1 style={styles.profileName}>Salam</h1>
+          <p style={styles.profilePhone}>+923XX-XXXXXXX</p>
+        </div>
+        <div style={styles.iconContainer}>
+          <span style={styles.icon}>⭐</span>
+          <span style={styles.icon}>🔔</span>
+          <span style={styles.icon}>⚙️</span>
+          <span style={styles.icon}>⋮</span>
+        </div>
+      </div>
+
+      {/* Horizontal Line */}
+      <div style={styles.horizontalLine} />
+        
+      {/* Carousel Section */}
+      <div style={styles.carousel}>
+        <div style={styles.carouselWrapper} ref={carouselRef}>
+          {['Ersaal', 'Smart SMS', 'New Feature', 'Update'].map((text, index) => (
+            <div key={index} style={styles.carouselItem}>
+              <h3 style={styles.carouselText}>{text}</h3>
+              <p style={styles.carouselSubText}>Your messages organized</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Folders Section */}
+      <div style={styles.folderSection}>
+        <div style={styles.folderHeader}>
+          <h2 style={styles.folderTitle}>Folders</h2>
+          <button style={styles.searchButton} onClick={handleSearchClick}>
+            🔍
+          </button>
+        </div>
+        <div style={styles.folderGrid}>
+          {folders.map((folder, index) => {
+            const folderStyle = {
+              ...styles.inactiveFolder,
+              ...styles[`${folder.toLowerCase()}Folder`],
+            };
+
+            return (
+              <button
+                key={index}
+                style={
+                  selectedFolder === index
+                    ? { ...folderStyle, ...styles.selectedFolder }
+                    : hoveredFolder === index
+                    ? { ...folderStyle, ...styles.hoveredFolder }
+                    : folderStyle
+                }
+                onMouseEnter={() => handleMouseEnter(index)}
+                onMouseLeave={handleMouseLeave}
+                onClick={() => handleFolderClick(index)}
+              >
+                <span style={styles.folderIcon}>📁</span>
+                <span style={
+                  selectedFolder === index
+                    ? { ...styles.folderText, ...styles.selectedText }
+                    : hoveredFolder === index
+                    ? { ...styles.folderText, ...styles.hoveredText }
+                    : styles.folderText
+                }>
+                  {folder}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Create Folder Button */}
+      <button
+        style={
+          hoveredCreateFolderButton
+            ? { ...styles.createFolderButton, ...styles.createFolderButtonHovered }
+            : styles.createFolderButton
+        }
+        onMouseEnter={handleCreateFolderButtonMouseEnter}
+        onMouseLeave={handleCreateFolderButtonMouseLeave}
+        onClick={handleCreateFolderClick} // Open the modal when button is clicked
+      >
+        Create Folder +
+      </button>
+
+      {/* Modal for creating new folder */}
+      {isModalOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <h2 style={styles.modalTitle}>Create New Folder</h2>
+            <input
+              style={styles.modalInput}
+              type="text"
+              placeholder="Folder Name"
+              value={newFolderName}
+              onChange={(e) => setNewFolderName(e.target.value)}
+            />
+            <button style={styles.modalButton} onClick={handleCreateNewFolder}>Create</button>
+            <button style={styles.modalCloseButton} onClick={handleModalClose}>Close</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const styles = {
+  container: {
+    width: '530px',
+    height: '900px',
+    backgroundColor: '#101010',
+    color: '#fff',
+    padding: '20px',
+    display: 'flex',
+    flexDirection: 'column',
+    boxSizing: 'border-box',
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px',
+  },
+  profile: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  profileName: {
+    margin: 0,
+    fontSize: '24px',
+    fontWeight: 'bold',
+  },
+  profilePhone: {
+    margin: 0,
+    fontSize: '14px',
+    color: '#b0b0b0',
+  },
+  iconContainer: {
+    display: 'flex',
+    gap: '10px',
+  },
+  icon: {
+    fontSize: '24px',
+    cursor: 'pointer',
+  },
+  carousel: {
+    overflow: 'hidden',
+    marginBottom: '20px',
+  },
+  carouselWrapper: {
+    display: 'flex',
+    transition: 'transform 0.5s ease-in-out',
+    width: '400.34px', // 4 items, each 280.17px width
+  },
+  carouselItem: {
+    flex: '0 0 280.17px',
+    height: '167.77px',
+    backgroundColor: '#1b1b1b',
+    borderRadius: '10px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: '10px', // Optional space between items
+  },
+  carouselText: {
+    margin: 0,
+    fontSize: '18px',
+  },
+  carouselSubText: {
+    margin: 0,
+    fontSize: '14px',
+    color: '#b0b0b0',
+  },
+  horizontalLine: {
+    borderTop: '1px solid #b0b0b0', // Adjust color and thickness as needed
+    margin: '20px 0', // Space above and below the line
+  },
+  folderSection: {
+    flexGrow: 1,
+  },
+  folderHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '10px',
+  },
+  folderTitle: {
+    margin: 0,
+    fontSize: '20px',
+  },
+  searchButton: {
+    backgroundColor: 'transparent',
+    border: 'none',
+    fontSize: '24px',
+    cursor: 'pointer',
+    color: '#fff',
+  },
+  folderGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '10px',
+    marginBottom: '20px',
+    marginRight: '110px',
+  },
+  inactiveFolder: {
+    backgroundColor: '#1b1b1b',
+    borderRadius: '17.26px',
+    padding: '10px',
+    display: 'flex',
+    alignItems: 'center',
+    border: 'none',
+    cursor: 'pointer',
+    color: '#fff',
+    transition: 'transform 0.2s ease-in-out',
+  },
+  hoveredFolder: {
+    backgroundColor: '#26A69A', // Hover color
+    borderRadius: '10px',
+    padding: '10px',
+    display: 'flex',
+    alignItems: 'center',
+    border: 'none',
+    cursor: 'pointer',
+    color: '#fff',
+    transform: 'scale(1.05)', // Zoom in effect
+    transition: 'transform 0.2s ease-in-out',
+  },
+  selectedFolder: {
+    backgroundColor: '#008080', // Selected color
+    borderRadius: '17.26px',
+    padding: '10px',
+    display: 'flex',
+    alignItems: 'center',
+    border: 'none',
+    cursor: 'pointer',
+    color: '#fff',
+    transition: 'transform 0.2s ease-in-out',
+  },
+  folderIcon: {
+    marginRight: '10px',
+    fontSize: '18px',
+  },
+  othersFolder: {
+    width: '174.2px',
+    height: '54.91px',
+  },
+  promosFolder: {
+    width: '192px',
+    height: '55px',
+  },
+  billsFolder: {
+    width: '146.5px',
+    height: '54.91px',
+  },
+  discountsFolder: {
+    width: '235.09px',
+    height: '54.91px',
+  },
+  banksFolder: {
+    width: '174.2px',
+    height: '54.91px',
+  },
+  familyFolder: {
+    width: '191.66px',
+    height: '54.91px',
+  },
+  ordersFolder: {
+    width: '182.72px',
+    height: '54.91px',
+  },
+  officeFolder: {
+    width: '183.36px',
+    height: '54.91px',
+  },
+  tourFolder: {
+    width: '148.64px',
+    height: '54.91px',
+  },
+  frequentFolder: {
+    width: '231.01px',
+    height: '54.91px',
+  },
+  cousinsFolder: {
+    width: '191.25px',
+    height: '54.91px',
+  },
+  frequentssFolder: {
+    width: '231.01px',
+    height: '54.91px',
+  },
+  folderText: {
+    fontSize: '20px',
+    fontWeight: '600',
+    lineHeight: '39.76px',
+    transition: 'color 0.2s ease-in-out',
+  },
+  hoveredText: {
+    color: '#000', // Text color on hover
+  },
+  selectedText: {
+    color: '#000', // Text color when selected
+  },
+  createFolderButton: {
+    width: '433.62px',
+    height: '69.11px',
+    backgroundColor: '#1b1b1b',
+    borderRadius: '10px',
+    border: '2px dotted #fff', // Dotted border
+    cursor: 'pointer',
+    textAlign: 'center',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    marginLeft: '20px', 
+    transition: 'background-color 0.2s ease-in-out', // Smooth transition for background color
+  },
+  createFolderButtonHovered: {
+    backgroundColor: '#26A69A', // Hover color
+  },
+      modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '8px',
+    textAlign: 'center',
+    width: '300px',
+  },
+  input: {
+    width: '100%',
+    padding: '10px',
+    margin: '10px 0',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+  },
+  modalButtons: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  modalButton: {
+    backgroundColor: '#008080',
+    color: '#fff',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+  },
+    modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modal: {
+    backgroundColor: '#1b1b1b',
+    padding: '20px',
+    borderRadius: '10px',
+    color: '#fff',
+    width: '300px',
+    textAlign: 'center',
+  },
+  modalTitle: {
+    fontSize: '24px',
+    marginBottom: '20px',
+  },
+  modalInput: {
+    width: '100%',
+    padding: '10px',
+    marginBottom: '20px',
+    borderRadius: '5px',
+    border: 'none',
+    outline: 'none',
+  },
+  modalButton: {
+    padding: '10px 20px',
+    backgroundColor: '#26A69A',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  modalCloseButton: {
+    padding: '10px 20px',
+    backgroundColor: '#ff4d4d',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginLeft: '10px',
+  },
+
+  
+  // Media Queries
+  '@media (max-width: 768px)': {
+    container: {
+      width: '100%',
+      height: 'auto',
+      padding: '10px',
+    },
+    header: {
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+    },
+    profileName: {
+      fontSize: '20px',
+    },
+    profilePhone: {
+      fontSize: '12px',
+    },
+    iconContainer: {
+      fontSize: '18px',
+    },
+    carouselItem: {
+      flex: '0 0 80%',
+    },
+    folderGrid: {
+      gridTemplateColumns: '1fr',
+    },
+    createFolderButton: {
+      width: '100%',
+      marginLeft: 0,
+    }
+  },
+
+  '@media (max-width: 480px)': {
+    container: {
+      padding: '5px',
+    },
+    profileName: {
+      fontSize: '18px',
+    },
+    carouselItem: {
+      height: '120px',
+    },
+    folderText: {
+      fontSize: '16px',
+    },
+    createFolderButton: {
+      fontSize: '16px',
+    }
+  }
+};
+
+export default LeftPanel;
