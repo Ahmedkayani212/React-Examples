@@ -1,0 +1,334 @@
+CreateFolder.js
+
+import React, { useState } from 'react';
+import './CreateFolder.css'; // Assuming you will style this using CSS
+
+const iconList = [
+  '📱', '🏠', '🚗', '🛠️', '📧', '🎓', '⚽', '🎵', '💼', '🧳', '👔', '👚', '👑', '🚴‍♂️', '🍔', '🍕'
+  // You can add more icons here
+];
+
+function CreateFolder() {
+  const [folderName, setFolderName] = useState('');
+  const [selectedIcon, setSelectedIcon] = useState('');
+  const [contact, setContact] = useState('');
+  const [contactList, setContactList] = useState([]);
+  const [folders, setFolders] = useState([]); // New state to track created folders
+
+  const handleFolderNameChange = (e) => {
+    setFolderName(e.target.value);
+  };
+
+  const handleContactChange = (e) => {
+    setContact(e.target.value);
+  };
+
+  const addContact = () => {
+    if (contact && !contactList.includes(contact)) {
+      setContactList([...contactList, contact]);
+      setContact('');
+    }
+  };
+
+  const deleteContact = (index) => {
+    const updatedContacts = contactList.filter((_, i) => i !== index);
+    setContactList(updatedContacts);
+  };
+
+  const handleIconClick = (icon) => {
+    setSelectedIcon(icon);
+  };
+
+  const handleCreateFolder = () => {
+    if (folderName && selectedIcon) {
+      // Create a new folder object
+      const newFolder = {
+        name: folderName,
+        icon: selectedIcon
+      };
+      // Update folders state with the new folder
+      setFolders([...folders, newFolder]);
+      // Reset folder input and icon
+      setFolderName('');
+      setSelectedIcon('');
+    } else {
+      alert('Please fill out all fields.');
+    }
+  };
+
+  const handleDeleteFolder = (index) => {
+    const updatedFolders = folders.filter((_, i) => i !== index);
+    setFolders(updatedFolders);
+  };
+
+  return (
+    <div className="create-folder-container">
+      <h2>Create Folder</h2>
+      
+      {/* Folder Name Input */}
+      <label>Folder Name*</label>
+      <input 
+        type="text" 
+        placeholder="Folder Name" 
+        value={folderName} 
+        onChange={handleFolderNameChange} 
+        className="input-folder-name"
+      />
+      
+      {/* Icon Selection */}
+      <label>Assign Icon</label>
+      <div className="icon-container">
+        {iconList.map((icon, index) => (
+          <span 
+            key={index} 
+            className={`icon ${selectedIcon === icon ? 'selected' : ''}`} 
+            onClick={() => handleIconClick(icon)}
+          >
+            {icon}
+          </span>
+        ))}
+      </div>
+      
+      {/* Add Contact */}
+      <label>Add Contacts*</label>
+      <div className="contact-input-container">
+        <input 
+          type="text" 
+          placeholder="Enter Contact" 
+          value={contact} 
+          onChange={handleContactChange} 
+          className="input-contact"
+        />
+        <button onClick={addContact} className="add-contact-btn">+</button>
+      </div>
+      
+      {/* Display Contact List */}
+      <ul className="contact-list">
+        {contactList.map((contact, index) => (
+          <li key={index} className="contact-item">
+            <span>{contact}</span>
+            <button onClick={() => deleteContact(index)} className="delete-contact-btn">✕</button>
+          </li>
+        ))}
+      </ul>
+      
+      {/* Create Folder Button */}
+      <button className="create-folder-btn" onClick={handleCreateFolder}>Create Folder +</button>
+      
+      {/* Display Created Folders */}
+      <div className="folders-container">
+        {folders.map((folder, index) => (
+          <div key={index} className="folder-container">
+            <span className="folder-icon">{folder.icon}</span>
+            <span className="folder-name">{folder.name}</span>
+            <button 
+              className="delete-folder-btn" 
+              onClick={() => handleDeleteFolder(index)}
+            >
+              🗑️
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default CreateFolder;
+
+.create-folder-container {
+  background-color: #0f1c18;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 400px;
+  height: 100vh;
+  margin: 0 auto;
+  color: white;
+  text-align: left;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+label {
+  font-size: 18px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+input.input-folder-name,
+input.input-contact {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: #1d2520;
+  color: white;
+}
+
+.icon-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.icon {
+  font-size: 24px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #1d2520;
+}
+
+.icon.selected {
+  background-color: #86FFC6;
+}
+
+.contact-input-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+button.add-contact-btn {
+  padding: 10px;
+  width: 40px;
+  height: 40px;
+  background-color: #86FFC6;
+  border: bold;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+ul.contact-list {
+  list-style: none;
+  padding: 0;
+}
+
+.contact-item {
+  display: flex;
+  justify-content: space-between;
+  background-color: #1d2520;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+button.delete-contact-btn {
+  background-color: #e74c3c;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button.create-folder-btn {
+  display: block;
+  margin: 0 auto;
+  padding: 15px 30px;
+  background-color: #00DBFF;
+  border: none;
+  border-radius: 5px;
+  color: #0f1c18;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button.create-folder-btn:hover {
+  background-color: #86FFC6;
+}
+
+.folders-container {
+  margin-top: 20px;
+}
+
+.folder-container {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #1d2520;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.folder-container:hover {
+  background-color: #2e3d37;
+}
+
+.folder-icon {
+  font-size: 24px;
+  margin-right: 10px;
+}
+
+.folder-name {
+  font-size: 18px;
+  color: white;
+  flex-grow: 1;
+}
+
+.delete-folder-btn {
+  background-color: #e74c3c;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  position: absolute;
+  right: 10px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .create-folder-container {
+    padding: 20px;
+  }
+
+  input.input-folder-name,
+  input.input-contact {
+    padding: 8px;
+    margin-bottom: 15px;
+  }
+
+  .icon {
+    font-size: 20px;
+    padding: 8px;
+  }
+
+  button.add-contact-btn {
+    width: 35px;
+    height: 35px;
+    padding: 8px;
+  }
+
+  button.create-folder-btn {
+    padding: 12px 25px;
+    font-size: 14px;
+  }
+
+  .contact-input-container {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+import React from 'react';
+import './CreateFolder.css';
+import CreateFolder from './CreateFolder';
+
+
+function App() {
+  return (
+    <div className="App">
+      <CreateFolder />
+    </div>
+  );
+}
+
+export default App;
