@@ -17,6 +17,7 @@ function App() {
 export default App;
 
 
+
 Scheduler.js
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
@@ -31,6 +32,7 @@ const Scheduler = () => {
   const [isDateModalOpen, setIsDateModalOpen] = useState(false); // Modal state for date
   const [isContactModalOpen, setIsContactModalOpen] = useState(false); // Modal state for contacts
   const [newContact, setNewContact] = useState({ firstName: '', lastName: '', mobileNumber: '' });
+  const [savedData, setSavedData] = useState([]); // To store all saved data
 
   const handleMessageChange = (e) => {
     setMessage(e.target.value);
@@ -57,11 +59,25 @@ const Scheduler = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewContact(prevState => ({ ...prevState, [name]: value }));
+    setNewContact((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handleSave = () => {
-    alert('Message Saved!');
+    if (message && contacts.length > 0) {
+      // Save message, date, and contact list into savedData
+      const newSavedData = {
+        message,
+        date: selectedDate,
+        contacts: [...contacts],
+      };
+      setSavedData([...savedData, newSavedData]);
+      alert('Data saved successfully!');
+      // Reset the fields
+      setMessage('');
+      setContacts([]);
+    } else {
+      alert('Please fill in all the sections before saving.');
+    }
   };
 
   const openDateModal = () => {
@@ -135,6 +151,29 @@ const Scheduler = () => {
         </ul>
       </div>
 
+      {/* Saved Data Section */}
+      <div className="saved-data-section">
+        <h4>Saved Messages & Contacts</h4>
+        {savedData.length === 0 ? (
+          <p>No saved data yet</p>
+        ) : (
+          savedData.map((data, index) => (
+            <div key={index} className="saved-item">
+              <p><strong>Message:</strong> {data.message}</p>
+              <p><strong>Date:</strong> {format(data.date, 'EEEE, dd MMMM yyyy')}</p>
+              <p><strong>Contacts:</strong></p>
+              <ul>
+                {data.contacts.map((contact, idx) => (
+                  <li key={idx}>
+                    {contact.firstName} {contact.lastName} - {contact.mobileNumber}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        )}
+      </div>
+
       {/* Date & Time Modal */}
       {isDateModalOpen && (
         <div className="modal">
@@ -196,6 +235,7 @@ const Scheduler = () => {
 };
 
 export default Scheduler;
+
 
 
 
@@ -425,6 +465,25 @@ Scheduler.css
   
   .delete-btn:hover {
     background-color: #cc0000;
+  }
+
+  .saved-data-section {
+    background-color: #2b2b2b;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .saved-item {
+    background-color: #404040;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    color: #fff;
+  }
+  
+  .saved-item strong {
+    color: #00ff66;
   }
   
   
