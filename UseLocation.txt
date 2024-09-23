@@ -1,0 +1,45 @@
+Basic Example for Understanding
+Example:
+App.js
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Link, useLocation } from 'react-router-dom';
+
+const Home = () => <h2>Home Page</h2>;
+const About = () => <h2>About Page</h2>;
+const Contact = () => <h2>Contact Page</h2>;
+
+const LocationDisplay = () => {
+  const location = useLocation();
+
+  return (
+    <div>
+      <h3>Current Location Information:</h3>
+      <p>Pathname: {location.pathname}</p>
+      <p>Search Query: {location.search}</p>
+      <p>Hash: {location.hash}</p>
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <Router>
+      <nav>
+        <Link to="/">Home</Link> |{' '}
+        <Link to="/about">About</Link> |{' '}
+        <Link to="/contact?name=JohnDoe#section1">Contact</Link>
+      </nav>
+      
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+
+      {/* Show the current location information */}
+      <LocationDisplay />
+    </Router>
+  );
+}
+
+export default App;
