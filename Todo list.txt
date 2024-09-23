@@ -1,0 +1,197 @@
+App.js
+
+import React, { useState, useEffect } from 'react';
+import TaskForm from './TaskForm';
+import TaskList from './TaskList';
+
+const App = () => {
+  const [tasks, setTasks] = useState(() => {
+    const savedTasks = localStorage.getItem('tasks');
+    return savedTasks ? JSON.parse(savedTasks) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
+
+  const addTask = (task) => {
+    setTasks([task, ...tasks]);
+  };
+
+  const updateTask = (updatedTask) => {
+    setTasks(
+      tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+    );
+  };
+
+  const removeTask = (taskId) => {
+    setTasks(tasks.filter((task) => task.id !== taskId));
+  };
+
+  return (
+    <div className="app-container">
+      <h1>Advanced To-Do List</h1>
+      <TaskForm addTask={addTask} />
+      <TaskList tasks={tasks} updateTask={updateTask} removeTask={removeTask} />
+    </div>
+  );
+};
+
+export default App;
+
+TaskFrom.js
+import React, { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+
+const TaskForm = ({ addTask }) => {
+  const [task, setTask] = useState('');
+  const [priority, setPriority] = useState('medium');
+  const [dueDate, setDueDate] = useState('');
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!task) return;
+
+    addTask({
+      id: uuidv4(),
+      text: task,
+      priority,
+      dueDate,
+      status: 'incomplete',
+    });
+
+    setTask('');
+    setPriority('medium');
+    setDueDate('');
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={task}
+        placeholder="Add a new task"
+        onChange={(e) => setTask(e.target.value)}
+      />
+      <select value={priority} onChange={(e) => setPriority(e.target.value)}>
+        <option value="high">High Priority</option>
+        <option value="medium">Medium Priority</option>
+        <option value="low">Low Priority</option>
+      </select>
+      <input
+        type="date"
+        value={dueDate}
+        onChange={(e) => setDueDate(e.target.value)}
+      />
+      <button type="submit">Add Task</button>
+    </form>
+  );
+};
+
+export default TaskForm;
+
+TaskItem.js
+import React, { useState } from 'react';
+
+const TaskItem = ({ task, updateTask, removeTask }) => {
+  const [status, setStatus] = useState(task.status);
+
+  const handleStatusChange = (newStatus) => {
+    setStatus(newStatus);
+    updateTask({ ...task, status: newStatus });
+  };
+
+  const isOverdue = new Date(task.dueDate) < new Date() && task.status !== 'complete';
+
+  return (
+    <div className={`task-item ${isOverdue ? 'overdue' : ''}`}>
+      <div>
+        <h3>{task.text}</h3>
+        <p>Priority: {task.priority}</p>
+        <p>Due Date: {task.dueDate}</p>
+        <p>Status: {status}</p>
+      </div>
+      <div>
+        <button onClick={() => handleStatusChange('incomplete')}>Incomplete</button>
+        <button onClick={() => handleStatusChange('in-progress')}>In Progress</button>
+        <button onClick={() => handleStatusChange('complete')}>Complete</button>
+        <button onClick={() => removeTask(task.id)}>Remove</button>
+      </div>
+    </div>
+  );
+};
+
+export default TaskItem;
+
+TaskList.js
+import React, { useState } from 'react';
+import TaskItem from './TaskItem';
+
+const TaskList = ({ tasks, updateTask, removeTask }) => {
+  const [filter, setFilter] = useState('all');
+
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === 'all') return true;
+    return task.status === filter;
+  });
+
+  return (
+    <div>
+      <h2>Tasks</h2>
+      <div>
+        <button onClick={() => setFilter('all')}>All</button>
+        <button onClick={() => setFilter('incomplete')}>Incomplete</button>
+        <button onClick={() => setFilter('in-progress')}>In Progress</button>
+        <button onClick={() => setFilter('complete')}>Complete</button>
+      </div>
+
+      {filteredTasks.length === 0 ? (
+        <p>No tasks found</p>
+      ) : (
+        filteredTasks.map((task) => (
+          <TaskItem
+            key={task.id}
+            task={task}
+            updateTask={updateTask}
+            removeTask={removeTask}
+          />
+        ))
+      )}
+    </div>
+  );
+};
+
+export default TaskList;
+
+index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+import './index.css';
+
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+
+index.css
+.app-container {
+  width: 600px;
+  margin: 0 auto;
+}
+
+.task-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.overdue {
+  background-color: #ffcccb;
+}
+
+button {
+  margin-right: 10px;
+}
