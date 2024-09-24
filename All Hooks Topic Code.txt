@@ -1,0 +1,122 @@
+import React, { useState, useReducer, useEffect, useContext, useRef } from "react";
+
+// Create a Context for global task state
+const TaskContext = React.createContext();
+
+// Reducer function to manage task states
+const taskReducer = (state, action) => {
+  switch (action.type) {
+    case "ADD_TASK":
+      return [...state, { id: state.length + 1, name: action.payload }];
+    case "REMOVE_TASK":
+      return state.filter(task => task.id !== action.payload);
+    case "SET_TASKS":
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
+// Context provider to wrap the application and provide task state
+const TaskProvider = ({ children }) => {
+  const [tasks, dispatch] = useReducer(taskReducer, []);
+
+  return (
+    <TaskContext.Provider value={{ tasks, dispatch }}>
+      {children}
+    </TaskContext.Provider>
+  );
+};
+
+// TaskList Component
+const TaskList = () => {
+  const { tasks, dispatch } = useContext(TaskContext);
+  const renderCount = useRef(0); // useRef to track the number of renders
+
+  // Increment render count each time the component re-renders
+  renderCount.current += 1;
+
+  // Function to handle the task removal
+  const removeTask = (id) => {
+    dispatch({ type: "REMOVE_TASK", payload: id });
+  };
+
+  return (
+    <div>
+      <h2>Task List (Rendered {renderCount.current} times)</h2>
+      <ul>
+        {tasks.map((task) => (
+          <li key={task.id}>
+            {task.name}{" "}
+            <button onClick={() => removeTask(task.id)}>Remove</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+// TaskForm Component to add new tasks
+const TaskForm = () => {
+  const [taskName, setTaskName] = useState(""); // useState for form input
+  const { dispatch } = useContext(TaskContext);
+  const inputRef = useRef(null); // useRef to focus input after submit
+
+  // Function to handle form submission
+  const addTask = (e) => {
+    e.preventDefault();
+    if (taskName.trim() !== "") {
+      dispatch({ type: "ADD_TASK", payload: taskName });
+      setTaskName("");
+      inputRef.current.focus(); // Focus input field after submitting
+    }
+  };
+
+  return (
+    <form onSubmit={addTask}>
+      <input
+        ref={inputRef} // Attach useRef to input
+        type="text"
+        value={taskName}
+        onChange={(e) => setTaskName(e.target.value)}
+        placeholder="Enter a task"
+      />
+      <button type="submit">Add Task</button>
+    </form>
+  );
+};
+
+// App component
+const App = () => {
+  const { dispatch } = useContext(TaskContext);
+
+  // useEffect to simulate fetching tasks from an API
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const apiTasks = [
+        { id: 1, name: "Learn React" },
+        { id: 2, name: "Build a project" }
+      ];
+      dispatch({ type: "SET_TASKS", payload: apiTasks });
+    };
+    
+    fetchTasks();
+  }, [dispatch]);
+
+  return (
+    <div>
+      <h1>Task Manager</h1>
+      <TaskForm />
+      <TaskList />
+    </div>
+  );
+};
+
+// Wrapping the App with TaskProvider to provide global state
+const Root = () => (
+  <TaskProvider>
+    <App />
+  </TaskProvider>
+);
+
+export default Root;
