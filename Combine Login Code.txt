@@ -1,0 +1,501 @@
+App.js
+import React from 'react';
+import './App.css';
+import SubscriptionForm from './SubscriptionForm';
+
+
+function App() {
+  return (
+    <div className="App">
+      <SubscriptionForm />
+    </div>
+  );
+}
+
+export default App;
+
+SubscriptionForm.js
+import React, { useState, useReducer, useEffect } from 'react';
+import './App.css';
+import mobileImage from './mobileImage.png'; 
+import ellipseImage from './ellipseImage.png'; 
+
+// Reducer function to manage the form state
+const initialState = {
+  mobile: '',
+  otp: ['', '', '', ''],
+  isChecked: false,
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_MOBILE':
+      return { ...state, mobile: action.payload };
+    case 'SET_OTP':
+      return { ...state, otp: action.payload };
+    case 'SET_OTP_DIGIT':
+      const updatedOtp = [...state.otp];
+      updatedOtp[action.index] = action.payload;
+      return { ...state, otp: updatedOtp };
+    case 'TOGGLE_CHECKBOX':
+      return { ...state, isChecked: action.payload };
+    default:
+      return state;
+  }
+};
+
+function SubscriptionForm() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [otpGenerated, setOtpGenerated] = useState(false);
+
+  const handleMobileChange = (event) => {
+    const value = event.target.value;
+    dispatch({ type: 'SET_MOBILE', payload: value });
+  };
+
+  const handleOtpChange = (index, event) => {
+    dispatch({ type: 'SET_OTP_DIGIT', index, payload: event.target.value });
+  };
+
+  const handleCheckboxChange = (event) => {
+    dispatch({ type: 'TOGGLE_CHECKBOX', payload: event.target.checked });
+  };
+
+  const generateOTP = () => {
+    return Array.from({ length: 4 }, () => Math.floor(Math.random() * 10));
+  };
+
+  useEffect(() => {
+    if (state.mobile.length === 10 && !otpGenerated) {
+      dispatch({ type: 'SET_OTP', payload: generateOTP() });
+      setOtpGenerated(true);
+    }
+  }, [state.mobile, otpGenerated]);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (state.isChecked) {
+      window.location.href = 'https://switch.com.pk/';
+    }
+  };
+
+  return (
+    <div className="container">
+      <div className="left-container">
+        <header className="logo">
+          <img src="Ersaal.png" alt="Logo" />
+        </header>
+
+        <h1 className="title">Subscribe to our Monthly package</h1>
+
+        <form className="subscription-form" onSubmit={handleSubmit}>
+          <label htmlFor="mobile" className="label">
+            Enter Mobile Number<span> Below</span>
+          </label>
+          <div className="input-container">
+            <span className="country-code">+92</span>
+            <input
+              type="text"
+              id="mobile"
+              className="mobile-input"
+              maxLength="10"
+              placeholder="XXXXXXXXXX"
+              value={state.mobile}
+              onChange={handleMobileChange}
+            />
+          </div>
+
+          <label htmlFor="otp" className="label">
+            Enter One Time <span>Password</span>
+          </label>
+          <div className="otp-container">
+            {state.otp.map((digit, index) => (
+              <input
+                key={index}
+                type="text"
+                className="otp-input"
+                maxLength="1"
+                placeholder="-"
+                value={digit}
+                onChange={(e) => handleOtpChange(index, e)}
+              />
+            ))}
+          </div>
+
+          <p className="otp-expiry">
+            The OTP will expire in <span>59sec</span>
+          </p>
+
+          <button
+            type="submit"
+            className="submit-button"
+            disabled={!state.isChecked}
+          >
+            Continue
+          </button>
+
+          <div className="checkbox-container">
+            <input
+              type="checkbox"
+              id="terms"
+              className="terms-checkbox"
+              checked={state.isChecked}
+              onChange={handleCheckboxChange}
+            />
+            <label htmlFor="terms" className="terms-label">
+              I agree to <span>Terms and Conditions</span>.
+            </label>
+          </div>
+        </form>
+
+        <footer className="footer">
+          <p>Daily Plan</p>
+          <p>
+            <span>Subscription charges: Upto Rs10/Day(Incl.Tax)</span>
+          </p>
+        </footer>
+      </div>
+
+      <div className="right-container">
+        <h1 className="heading">
+          <span className="highlight">Group chat</span> <span className="normal">made efficient</span>
+        </h1>
+        <p className="subheading">
+          Keep updated with your groups and stay seamlessly connected.
+        </p>
+        
+        <div className="image-container">
+          <img src={mobileImage} alt="Mobile" className="mobile-image" />
+          <img src={ellipseImage} alt="Ellipse" className="ellipse-image" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default SubscriptionForm;
+
+
+App.css
+body {
+  background: #262B23;
+  font-family: Arial, sans-serif;
+  color: #ffffff;
+  margin: 0;
+}
+
+.container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  flex-wrap: wrap;
+}
+
+.left-container {
+  padding: 20px;
+  padding-left: 50px;
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: rgba(38, 43, 35, 0.3);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.right-container {
+  flex-grow: 1;
+  background-color: black;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.logo {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  margin-right: 40px;
+}
+
+.logo img {
+  width: 161px;
+  height: 56px;
+}
+
+.title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.label {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 5px;
+  line-height: 1.2;
+  font-weight: 300;
+  text-align: left;
+}
+
+label span {
+  color: #86FFC6;
+}
+
+.input-container {
+  display: flex;
+  width: 70%;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.country-code {
+  background-color: #1D2025;
+  padding: 13px;
+  border-radius: 5px 0 0 5px;
+  border: none;
+}
+
+.mobile-input {
+  flex: 1;
+  padding: 14.5px;
+  border-radius: 0 5px 5px 0;
+  border: none;
+  background-color: #1D2025;
+  color: #ffffff;
+}
+
+.otp-container {
+  display: flex;
+  margin-bottom: 8px;
+  margin-top: 20px;
+  gap: 20px;
+}
+
+.otp-input {
+  width: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #CECECE;
+  background-color: #1e2228;
+  color: #ffffff;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.otp-expiry {
+  font-size: 0.875rem;
+  color: #a3a3a3;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.otp-expiry span {
+  color: #86FFC6;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.terms-checkbox {
+  margin-right: 10px;
+}
+
+.terms-label span {
+  color: #86FFC6;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.submit-button {
+  background: linear-gradient(to right, #86FFC6, #00DBFF);
+  color: #0a0f14;
+  padding: 15px;
+  width: 70%;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  margin-top: 30px;
+}
+
+.submit-button:hover {
+  background-color: #16a085;
+}
+
+.footer {
+  font-size: 0.875rem;
+  color: white;
+  margin-top: 0px;
+  text-align: left;
+  padding-left: 5px;
+}
+
+.footer span {
+  color: #A6A6A6;
+  font-size: 0.75rem;
+}
+
+.heading {
+  font-size: 48px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.highlight {
+  color: #86FFC6;
+}
+
+.normal {
+  color: white;
+}
+
+.subheading {
+  font-size: 19.32px;
+  color: white;
+  margin-bottom: 30px;
+}
+
+.image-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.mobile-image {
+  width: 300px;
+  z-index: 2;
+  margin-left: 70px;
+}
+
+.ellipse-image {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(0%);
+  width: 450px;
+  z-index: 1;
+}
+
+/* Responsive Styles for Tablets and Mobile Devices */
+@media screen and (max-width: 1024px) {
+  .left-container {
+    width: 100%;
+  }
+
+  .right-container {
+    width: 100%;
+  }
+
+  .heading {
+    font-size: 1.75rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .left-container {
+    padding: 15px;
+    max-width: 100%;
+  }
+
+  .right-container {
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .mobile-image {
+    width: 250px;
+  }
+  
+  .ellipse-image {
+    width: 350px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .left-container, 
+  .right-container {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .title, .label {
+    font-size: 1.25rem;
+  }
+
+  .heading {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .subheading {
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  .mobile-image {
+    width: 200px;
+    margin-left: 0;
+  }
+
+  .ellipse-image {
+    width: 300px;
+  }
+
+  .input-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .country-code, .mobile-input {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .otp-container {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .otp-input {
+    width: 45px;
+  }
+
+  .submit-button {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .heading {
+    font-size: 1.25rem;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .mobile-image {
+    width: 150px;
+  }
+
+  .ellipse-image {
+    width: 250px;
+  }
+}
